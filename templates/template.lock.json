@@ -1,6 +1,7 @@
 {
   "brand": "跑路云",
   "model": "deepseek-chat",
-  "generated_at": "2026-06-10T07:21:38.451220+00:00",
+  "prompt_version": 2,
+  "generated_at": "2026-06-10T15:18:15.194890+00:00",
   "regeneration": "disabled"
 }
