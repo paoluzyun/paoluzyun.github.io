@@ -5,13 +5,13 @@ author: 跑路云编辑部
 site_url: https://paoluzyun.github.io
 hero_image: /assets/img/paoluzyun-hero.png
 default_image: /assets/img/paoluzyun-hero.png
-last_updated: "2026-06-10"
+last_updated: '2026-06-10'
 notice: 优惠码和活动可能随时调整，请在下单前以服务商官网实时页面为准。
 nav:
-  - name: 首页
-    url: /
-  - name: 优惠文章
-    url: /articles/
-  - name: 友情链接
-    url: "#friends"
+- name: 首页
+  url: /
+- name: 优惠文章
+  url: /articles/
+- name: 友情链接
+  url: '#friends'
 friends: []
