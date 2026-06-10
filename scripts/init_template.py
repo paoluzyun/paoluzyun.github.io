@@ -49,6 +49,7 @@ ARTICLE_PLACEHOLDERS = {
     "$category",
     "$date",
     "$author",
+    "$notice",
     "$article_body",
     "$article_image",
     "$article_image_alt",
@@ -136,6 +137,15 @@ def validate_template(name: str, text: str, required: set[str]) -> None:
         raise ValueError(f"{name} is missing placeholders: {', '.join(missing)}")
     if "<h1" not in lowered:
         raise ValueError(f"{name} must contain a semantic H1 heading.")
+    if "<button" in lowered:
+        raise ValueError(
+            f"{name} contains a button, but this static theme has no button actions."
+        )
+    unsupported_claims = ("核验通过 日期戳", "点击弹出", "轮播")
+    if any(claim in text for claim in unsupported_claims):
+        raise ValueError(
+            f"{name} describes an interaction or verification state not provided by the program."
+        )
 
 
 def validate_css(css: str) -> None:
@@ -296,6 +306,8 @@ SEO head、canonical、Open Graph 和 JSON-LD 由外层程序生成。
 - CSS 要形成完整设计系统，包含变量、基础排版、交互状态和手机端 @media 规则。
 - 每个模板使用一个语义明确的 h1，合理使用 section、article、nav、aside 等标签。
 - 所有交互只使用普通链接和 details/summary，不需要 JavaScript。
+- 不要输出 button、轮播、弹窗或其他需要 JavaScript 才能工作的控件。
+- 不要擅自显示“核验通过”等状态；只能展示程序提供的日期、提醒和文章内容。
 - 页面中不得出现“由 AI 生成”“SEO”“GEO”“模板”“占位符”等实现说明。
 - 不生成任何虚假优惠码、价格、用户数量或性能承诺。
 
@@ -358,6 +370,7 @@ SEO head、canonical、Open Graph 和 JSON-LD 由外层程序生成。
 请主动修正任何“像骨架、像默认模板、视觉单薄、层级不清、留白粗糙、组件未设计、
 文章阅读体验不足、移动端处理敷衍”的问题。保留必要占位符，不要缩减现有完成度。
 你可以重构 HTML 和 CSS，只要继续忠于创意方案并保持纯静态实现。
+不要输出无功能按钮、轮播、弹窗，也不要显示程序没有提供的核验状态。
 
 只返回严格 JSON：
 {{

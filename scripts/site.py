@@ -201,6 +201,7 @@ def layout(
   <meta name="twitter:image" content="{esc(social_image)}">
   {article_meta}
   <link rel="stylesheet" href="{esc(site_path(config, "/assets/css/style.css"))}?v={asset_version}">
+  <link rel="stylesheet" href="{esc(site_path(config, "/assets/css/responsive-fixes.css"))}?v={asset_version}">
   <link rel="alternate" type="application/rss+xml" title="{esc(config['title'])}" href="{esc(site_path(config, "/feed.xml"))}">
   {schemas}
 </head>
@@ -384,6 +385,7 @@ def render_article(config: dict, article: dict, articles: list[dict], base_url: 
             "category": esc(article.get("category")),
             "date": esc(article.get("date")),
             "author": esc(config.get("author")),
+            "notice": esc(config.get("notice")),
             "article_body": body_html,
             "article_image": esc(site_path(config, image)),
             "article_image_alt": esc(article.get("image_alt", article["title"])),
