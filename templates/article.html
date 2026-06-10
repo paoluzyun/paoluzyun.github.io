@@ -1,1 +1,48 @@
-<main><article class="article"><h1>$article_title</h1><div class="meta"><span class="author">$author</span><time class="date">$date</time><span class="category">$category</span></div><img src="$article_image" alt="$article_image_alt" class="featured-image"><figcaption>$article_image_caption</figcaption><div class="content">$article_body</div></article><aside class="faq"><h2>FAQ</h2>$faq_html</aside><nav class="related"><h2>相关文章</h2>$related_links</nav></main>
+<article class="article-detail">
+  <div class="container article-container">
+    <div class="article-header">
+      <figure class="article-banner">
+        <img src="$article_image" alt="$article_image_alt" class="article-image">
+        <figcaption class="article-image-caption">$article_image_caption</figcaption>
+      </figure>
+      <div class="article-meta">
+        <span class="article-category">$category</span>
+        <span class="article-date">$date</span>
+        <span class="article-author">$author</span>
+      </div>
+      <h1 class="article-title">$article_title</h1>
+      <p class="article-description">$article_description</p>
+    </div>
+    <div class="article-body">
+      $article_body
+    </div>
+    <div class="article-footer">
+      <div class="tag-list">$tag_html</div>
+      <button class="btn btn-verify">核验此优惠</button>
+      <div class="verification-stamp">核验通过 日期戳</div>
+    </div>
+  </div>
+</article>
+
+<aside class="related-links section">
+  <div class="container">
+    <h2 class="section-title">相关推荐</h2>
+    <div class="side-links">
+      $related_links
+    </div>
+  </div>
+</aside>
+
+<div class="article-faq section">
+  <div class="container">
+    <h2 class="section-title">常见问题</h2>
+    $faq_html
+  </div>
+</div>
+
+<nav class="article-nav">
+  <div class="container">
+    <a href="$home_url" class="btn btn-secondary">返回首页</a>
+    <a href="$articles_url" class="btn btn-secondary">所有文章</a>
+  </div>
+</nav>

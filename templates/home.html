@@ -1,1 +1,65 @@
-<main><section class="hero"><h1>$brand</h1><p class="tagline">$tagline</p><p class="description">$description</p><img src="$hero_image" alt="" class="hero-image"><div class="trust-points">$trust_points</div></section><section class="articles"><h2>最新文章</h2><p class="summary">$answer_summary</p><div class="article-cards">$article_cards</div></section><section class="faq"><h2>常见问题</h2>$home_faq_html</section></main>
+<section class="hero-section">
+  <div class="container hero-layout">
+    <div class="hero-visual">
+      <img src="$hero_image" alt="跑路云驿站" class="hero-illustration">
+    </div>
+    <div class="hero-content">
+      <h1 class="hero-title">$brand</h1>
+      <p class="hero-tagline">$tagline</p>
+      <p class="hero-description">$description</p>
+      <div class="hero-actions">
+        <a href="$articles_url" class="btn btn-primary">查看最新优惠</a>
+        <span class="trust-badge"><span class="icon-check"></span> $trust_points</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="latest-offers section">
+  <div class="container">
+    <div class="section-divider"></div>
+    <h2 class="section-title">最新优惠</h2>
+    <div class="offer-carousel">
+      $article_cards
+    </div>
+  </div>
+</section>
+
+<section class="popular-topics section">
+  <div class="container">
+    <div class="section-divider"></div>
+    <h2 class="section-title">热门机场</h2>
+    <div class="topic-grid">
+      $topic_cards
+    </div>
+  </div>
+</section>
+
+<section class="verification section">
+  <div class="container">
+    <div class="section-divider"></div>
+    <h2 class="section-title">活动核验</h2>
+    <div class="verification-summary">
+      <p>$answer_summary</p>
+      <p class="verification-meta">已核验 $article_count 项优惠 · 最后更新 $last_updated</p>
+    </div>
+    <div class="faq-list">
+      $home_faq_html
+    </div>
+  </div>
+</section>
+
+<section class="notice-bar section">
+  <div class="container">
+    <p class="notice-text">$notice</p>
+  </div>
+</section>
+
+<aside class="friend-links section">
+  <div class="container">
+    <h2 class="section-title">友情链接</h2>
+    <div class="friend-grid">
+      $friend_cards
+    </div>
+  </div>
+</aside>
