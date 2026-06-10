@@ -38,7 +38,6 @@ jobs:
           DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
         run: |
-          test ! -f templates/template.lock.json
           python scripts/init_template.py
           python scripts/site.py build --site-url "$RESOLVED_SITE_URL"
 

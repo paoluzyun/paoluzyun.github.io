@@ -38,10 +38,23 @@ jobs:
 
       - name: Check template initialization
         run: |
-          if [ ! -f templates/template.lock.json ]; then
-            echo "::error title=Template not initialized::Run the Initialize DeepSeek Template workflow once."
-            exit 1
-          fi
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          lock_path = Path("templates/template.lock.json")
+          if not lock_path.exists():
+              raise SystemExit(
+                  "::error title=Template not initialized::"
+                  "Run the Initialize DeepSeek Template workflow once."
+              )
+          version = int(json.loads(lock_path.read_text(encoding="utf-8")).get("prompt_version", 0))
+          if version < 2:
+              raise SystemExit(
+                  "::error title=Template upgrade required::"
+                  "Run Initialize DeepSeek Template once to create the flexible v2 design."
+              )
+          PY
 
       - name: Checkout private keyword data
         if: github.event_name != 'push'

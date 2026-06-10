@@ -146,6 +146,9 @@ def layout(
     canonical: str,
     keywords: str = "",
     structured_data: list[dict] | None = None,
+    page_type: str = "website",
+    published_date: str = "",
+    modified_date: str = "",
 ) -> str:
     nav = "".join(
         f'<a href="{esc(site_path(config, item["url"]))}">{esc(item["name"])}</a>'
@@ -153,10 +156,20 @@ def layout(
     )
     full_title = title if title == config["title"] else f"{title} | {config['title']}"
     asset_version = urllib.parse.quote(str(config.get("_asset_version", "")))
+    social_image = config.get("_base_url", site_url(config)) + config.get("default_image", "")
     schemas = "".join(
         f'<script type="application/ld+json">{json.dumps(item, ensure_ascii=False)}</script>'
         for item in (structured_data or [])
     )
+    article_meta = ""
+    if published_date:
+        article_meta += (
+            f'<meta property="article:published_time" content="{esc(published_date)}">'
+        )
+    if modified_date:
+        article_meta += (
+            f'<meta property="article:modified_time" content="{esc(modified_date)}">'
+        )
     return f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -167,13 +180,26 @@ def layout(
   <meta name="keywords" content="{esc(keywords or config.get("keywords", ""))}">
   <meta name="author" content="{esc(config.get("author"))}">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="bingbot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta name="theme-color" content="#087f73">
   <link rel="canonical" href="{esc(canonical)}">
+  <link rel="alternate" hreflang="zh-CN" href="{esc(canonical)}">
+  <link rel="alternate" hreflang="x-default" href="{esc(canonical)}">
   <meta property="og:locale" content="zh_CN">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="{esc(page_type)}">
+  <meta property="og:site_name" content="{esc(config['title'])}">
   <meta property="og:title" content="{esc(full_title)}">
   <meta property="og:description" content="{esc(description)}">
   <meta property="og:url" content="{esc(canonical)}">
-  <meta property="og:image" content="{esc(config.get("_base_url", site_url(config)) + config.get("default_image", ""))}">
+  <meta property="og:image" content="{esc(social_image)}">
+  <meta property="og:image:alt" content="{esc(config['title'])}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{esc(full_title)}">
+  <meta name="twitter:description" content="{esc(description)}">
+  <meta name="twitter:image" content="{esc(social_image)}">
+  {article_meta}
   <link rel="stylesheet" href="{esc(site_path(config, "/assets/css/style.css"))}?v={asset_version}">
   <link rel="alternate" type="application/rss+xml" title="{esc(config['title'])}" href="{esc(site_path(config, "/feed.xml"))}">
   {schemas}
@@ -219,16 +245,43 @@ def render_home(config: dict, articles: list[dict], base_url: str) -> None:
     )
     if not friends:
         friends = '<p class="empty-state">友情链接位置已预留，确认合作站点后再公开展示。</p>'
+    trust_points = "".join(
+        f"<li>{esc(item)}</li>" for item in config.get("trust_points", [])
+    )
+    topic_cards = "".join(
+        f"""<a class="topic-card" href="{esc(site_path(config, "/articles/"))}">
+          <h3>{esc(item.get("name"))}</h3>
+          <p>{esc(item.get("desc"))}</p>
+        </a>"""
+        for item in config.get("topics", [])
+    )
+    home_faq = [
+        item
+        for item in config.get("home_faq", [])
+        if isinstance(item, dict) and item.get("question") and item.get("answer")
+    ]
+    home_faq_html = "".join(
+        f"""<details class="faq-item">
+          <summary>{esc(item["question"])}</summary>
+          <p>{esc(item["answer"])}</p>
+        </details>"""
+        for item in home_faq
+    )
     body = template_body(
         HOME_TEMPLATE,
         {
             "brand": esc(config["title"]),
+            "tagline": esc(config.get("tagline")),
             "description": esc(config["description"]),
+            "answer_summary": esc(config.get("answer_summary")),
             "last_updated": esc(config.get("last_updated")),
             "notice": esc(config.get("notice")),
             "article_count": len(articles),
             "article_cards": article_cards,
             "friend_cards": friends,
+            "trust_points": trust_points,
+            "topic_cards": topic_cards,
+            "home_faq_html": home_faq_html,
             "hero_image": esc(site_path(config, config.get("hero_image"))),
             "articles_url": esc(site_path(config, "/articles/")),
         },
@@ -237,6 +290,7 @@ def render_home(config: dict, articles: list[dict], base_url: str) -> None:
         {
             "@context": "https://schema.org",
             "@type": "WebSite",
+            "@id": f"{base_url}/#website",
             "name": config["title"],
             "url": f"{base_url}/",
             "description": config["description"],
@@ -244,12 +298,46 @@ def render_home(config: dict, articles: list[dict], base_url: str) -> None:
         },
         {
             "@context": "https://schema.org",
+            "@type": "WebPage",
+            "@id": f"{base_url}/#webpage",
+            "url": f"{base_url}/",
+            "name": config["title"],
+            "description": config["description"],
+            "dateModified": config.get("last_updated"),
+            "isPartOf": {"@id": f"{base_url}/#website"},
+            "about": {
+                "@type": "Thing",
+                "name": "机场优惠码与折扣活动",
+            },
+            "inLanguage": "zh-CN",
+        },
+        {
+            "@context": "https://schema.org",
             "@type": "Organization",
+            "@id": f"{base_url}/#organization",
             "name": config["title"],
             "url": f"{base_url}/",
             "logo": base_url + config.get("default_image", ""),
         },
     ]
+    if home_faq:
+        schemas.append(
+            {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": item["question"],
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": item["answer"],
+                        },
+                    }
+                    for item in home_faq
+                ],
+            }
+        )
     (ROOT / "index.html").write_text(
         layout(
             config,
@@ -259,6 +347,9 @@ def render_home(config: dict, articles: list[dict], base_url: str) -> None:
             f"{base_url}/",
             config.get("keywords", ""),
             schemas,
+            "website",
+            config.get("last_updated", ""),
+            config.get("last_updated", ""),
         ),
         encoding="utf-8",
     )
@@ -318,6 +409,32 @@ def render_article(config: dict, article: dict, articles: list[dict], base_url: 
         "inLanguage": "zh-CN",
     }
     schemas = [article_schema]
+    schemas.append(
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "首页",
+                    "item": f"{base_url}/",
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "优惠文章",
+                    "item": f"{base_url}/articles/",
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": article["title"],
+                    "item": f"{base_url}{article_url(article)}",
+                },
+            ],
+        }
+    )
     if faq_items:
         schemas.append(
             {
@@ -347,6 +464,9 @@ def render_article(config: dict, article: dict, articles: list[dict], base_url: 
             f"{base_url}{article_url(article)}",
             article.get("keywords", ""),
             schemas,
+            "article",
+            article.get("date", ""),
+            article.get("date", ""),
         ),
         encoding="utf-8",
     )
