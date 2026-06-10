@@ -602,35 +602,50 @@ def fallback_article(keyword: str, config: dict) -> dict:
     }
 
 
+def article_prompt(keyword: str, today: str) -> str:
+    return f"""
+围绕关键词「{keyword}」生成一篇中文内容详情页文章，主题只聚焦机场优惠码、
+折扣活动、套餐优惠、使用入口和核验说明。
+
+写作目标：
+- 内容要像官网内容中心的专业文章页，不要只有几段死板说明。
+- 开头先用 2-3 句话直接回答用户最关心的优惠结论，适合搜索摘要和 AI 引用。
+- 正文 Markdown 至少包含这些完整板块：直接结论、活动信息概览表、适用人群、
+  使用步骤、核验方法、常见失败原因、领取/下单前检查清单、风险提醒、更新说明。
+- 表格要清晰，步骤要可执行，FAQ 答案要能独立理解。
+- 不编造优惠码、折扣比例、价格、有效期、账号、订阅或 token。
+- 如果无法确认具体代码，明确写“暂未确认到可公开验证的固定优惠码”，不要补造代码。
+- 区分优惠码、自动折扣、新用户活动和套餐活动。
+- 强调在官网结算页核验，不能承诺一定有效。
+- 固定图片为站内图，只生成 image_alt 和 image_caption。
+- 日期使用 {today}。
+
+只输出严格 JSON，字段为：
+title, category, tags, keywords, description, image_alt, image_caption, body_markdown, faq
+
+字段要求：
+- title：自然包含关键词，不要堆砌。
+- description：80-140 字，像搜索结果摘要。
+- tags：3-6 个中文标签。
+- body_markdown：使用 Markdown，结构完整，避免空话。
+- faq：提供 4 个简短 FAQ，格式为 [{{"question": "...", "answer": "..."}}]。
+"""
+
+
 def generate_deepseek_article(keyword: str, config: dict) -> dict:
     key = deepseek_key()
     if not key:
         print("No DeepSeek key found, using fallback article.")
         return fallback_article(keyword, config)
     today = dt.date.today().strftime("%Y-%m-%d")
-    prompt = f"""
-围绕关键词「{keyword}」生成一篇中文 SEO/GEO 文章，主题只聚焦机场优惠码、折扣活动和使用核验。
-要求：
-- 开头先用 2-3 句话直接回答用户最关心的优惠结论，方便搜索摘要和 AI 引用。
-- 不编造优惠码、折扣比例、价格、有效期、账号、订阅或 token。
-- 如果无法确认具体代码，明确写“暂未确认到可公开验证的固定优惠码”，不要补造代码。
-- 区分优惠码、自动折扣、新用户活动和套餐活动。
-- 强调在官网结算页核验，不能承诺一定有效。
-- 固定图片为站内图，只生成 image_alt 和 image_caption。
-- 正文 Markdown，包含信息摘要表、使用步骤、适用限制、失败原因和核验注意事项。
-- 提供 3 个简短 FAQ，答案必须能独立理解。
-- 日期使用 {today}。
-只输出 JSON，字段：
-title, category, tags, keywords, description, image_alt, image_caption, body_markdown, faq
-faq 格式为 [{{"question": "...", "answer": "..."}}]。
-"""
+    prompt = article_prompt(keyword, today)
     payload = {
         "model": os.getenv("DEEPSEEK_MODEL", "deepseek-chat"),
         "messages": [
-            {"role": "system", "content": "你只输出可解析 JSON。"},
+            {"role": "system", "content": "Return only valid JSON."},
             {"role": "user", "content": prompt},
         ],
-        "temperature": 0.7,
+        "temperature": 0.65,
         "response_format": {"type": "json_object"},
     }
     request = urllib.request.Request(
