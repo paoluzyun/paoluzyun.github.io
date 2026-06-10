@@ -1,0 +1,17 @@
+title: 跑路云
+description: 跑路云官方网站整理机场优惠码、限时折扣、套餐活动和使用说明，帮助读者快速核验公开优惠信息。
+keywords: 跑路云,跑路云官网,机场优惠码,机场折扣码,机场优惠活动
+author: 跑路云编辑部
+site_url: https://paoluzyun.github.io
+hero_image: /assets/img/paoluzyun-hero.png
+default_image: /assets/img/paoluzyun-hero.png
+last_updated: "2026-06-10"
+notice: 优惠码和活动可能随时调整，请在下单前以服务商官网实时页面为准。
+nav:
+  - name: 首页
+    url: /
+  - name: 优惠文章
+    url: /articles/
+  - name: 友情链接
+    url: "#friends"
+friends: []

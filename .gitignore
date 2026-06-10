@@ -1,0 +1,10 @@
+local/
+.env
+deepseek.key
+_site/
+.bundle/
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.private-keywords/
