@@ -183,7 +183,7 @@ def layout(
   <meta name="googlebot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta name="bingbot" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta name="theme-color" content="#087f73">
+  <meta name="theme-color" content="{esc(config.get("theme_color", "#087f73"))}">
   <link rel="canonical" href="{esc(canonical)}">
   <link rel="alternate" hreflang="zh-CN" href="{esc(canonical)}">
   <link rel="alternate" hreflang="x-default" href="{esc(canonical)}">
