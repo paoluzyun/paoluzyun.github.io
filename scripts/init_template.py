@@ -41,7 +41,6 @@ HOME_REQUIRED_PLACEHOLDERS = {
     "$brand",
     "$article_cards",
     "$home_faq_html",
-    "$articles_url",
 }
 ARTICLE_PLACEHOLDERS = {
     "$article_title",
