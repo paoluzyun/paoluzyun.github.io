@@ -506,6 +506,7 @@ def build(args: argparse.Namespace) -> None:
     config["_base_url"] = base_url
     config["_asset_version"] = dt.datetime.now().strftime("%Y%m%d%H%M%S")
     articles = load_articles()
+    clean_orphan_article_pages(articles)
     for article in articles:
         render_article(config, article, articles, base_url)
     render_articles_index(config, articles, base_url)
@@ -515,6 +516,16 @@ def build(args: argparse.Namespace) -> None:
     render_robots(config, base_url)
     write_indexnow_key()
     print(f"Built {len(articles)} articles.")
+
+
+def clean_orphan_article_pages(articles: list[dict]) -> None:
+    output_dir = ROOT / "articles"
+    if not output_dir.exists():
+        return
+    keep = {"index.html"} | {f"{item['slug']}.html" for item in articles if item.get("slug")}
+    for path in output_dir.glob("*.html"):
+        if path.name not in keep:
+            path.unlink()
 
 
 def render_sitemap(config: dict, articles: list[dict], base_url: str) -> None:
